@@ -1,0 +1,43 @@
+{
+    "name": "bolt/bolt-extension-starter-extended",
+    "description": "A description about your extension should go here.",
+    "type": "bolt-extension",
+    "keywords": [
+        "foo",
+        "bar"
+    ],
+    "require": {
+        "bolt/bolt": "^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.7"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Your Name",
+            "email": "you@example.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Bolt\\Extension\\YourName\\ExtensionName\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Bolt\\Extension\\YourName\\ExtensionName\\Tests\\": "tests",
+            "Bolt\\Tests\\": "vendor/bolt/bolt/tests/phpunit/unit/"
+        }
+    },
+    "extra": {
+        "bolt-assets": "web",
+        "bolt-class": "Bolt\\Extension\\YourName\\ExtensionName\\ExtensionNameExtension",
+        "bolt-icon": "bolt-icon.png",
+        "bolt-screenshots": [
+            "screenshots/screenshot1.png"
+        ]
+    }
+}
