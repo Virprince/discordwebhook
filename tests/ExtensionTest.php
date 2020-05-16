@@ -1,12 +1,12 @@
 <?php
 
-namespace Bolt\Extension\YourName\ExtensionName\Tests;
+namespace Bolt\Extension\Virprince\DiscordWebHook\Tests;
 
 use Bolt\Tests\BoltUnitTest;
-use Bolt\Extension\YourName\ExtensionName\Extension;
+use Bolt\Extension\Virprince\DiscordWebHook\Extension;
 
 /**
- * Ensure that the ExtensionName extension loads correctly.
+ * Ensure that the DiscordWebHook extension loads correctly.
  *
  */
 class ExtensionTest extends BoltUnitTest
@@ -17,7 +17,7 @@ class ExtensionTest extends BoltUnitTest
         $extension = new Extension($app);
         $app['extensions']->register( $extension );
         $name = $extension->getName();
-        $this->assertSame($name, 'ExtensionName');
+        $this->assertSame($name, 'DiscordWebHook');
         $this->assertSame($extension, $app["extensions.$name"]);
     }
 }

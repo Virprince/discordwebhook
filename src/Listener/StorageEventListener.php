@@ -1,6 +1,6 @@
 <?php
 
-namespace Bolt\Extension\YourName\ExtensionName\Listener;
+namespace Bolt\Extension\Virprince\DiscordWebHook\Listener;
 
 use Bolt\Events\StorageEvent;
 use Silex\Application;
@@ -9,7 +9,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * Event class to handle storage related events.
  *
- * @author Your Name <you@example.com>
+ * @author Your Name <virprince@gmail.com>
  */
 class StorageEventListener implements EventSubscriberInterface
 {
@@ -17,6 +17,7 @@ class StorageEventListener implements EventSubscriberInterface
     private $app;
     /** @var array The extension's configuration parameters */
     private $config;
+    
 
     /**
      * Initiate the listener with Bolt Application instance and extension config.
@@ -37,10 +38,15 @@ class StorageEventListener implements EventSubscriberInterface
      */
     public function onPostSave(StorageEvent $event)
     {
-        $id = $event->getId(); // record id
-        $contenttype = $event->getContentType(); // record contenttype
-        $record = $event->getContent(); // record itself
-        $created = $event->isCreate(); // if record was created, updated or deleted, for more information look here: https://docs.bolt.cm/extensions/essentials#adding-storage-events
+        $data = [
+            'id'          => $event->getId(),            // record id
+            'contenttype' => $event->getContentType(),   // record contenttype
+            'created'     => $event->isCreate(),         // if record was created, updated or deleted, for more information look here: https://docs.bolt.cm/extensions/essentials#adding-storage-events
+            // 'record'      => $event->getContent(),       // record itself
+        ];
+
+        // $this->app['discordmessage']->buildMessage($data);
+      
     }
 
     /**

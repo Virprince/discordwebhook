@@ -1,13 +1,13 @@
 <?php
 
-namespace Bolt\Extension\YourName\ExtensionName\Field;
+namespace Bolt\Extension\Virprince\DiscordWebHook\Field;
 
 use Bolt\Storage\Field\FieldInterface;
 
 /**
  * Custom field type class for use in ContentTypes.
  *
- * @author Your Name <you@example.com>
+ * @author Your Name <virprince@gmail.com>
  */
 class ExampleField implements FieldInterface
 {

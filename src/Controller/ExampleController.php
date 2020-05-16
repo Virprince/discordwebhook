@@ -1,6 +1,6 @@
 <?php
 
-namespace Bolt\Extension\YourName\ExtensionName\Controller;
+namespace Bolt\Extension\Virprince\DiscordWebHook\Controller;
 
 use Bolt\Controller\Base;
 use Silex\Application;
@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Controller class.
  *
- * @author Your Name <you@example.com>
+ * @author Your Name <virprince@gmail.com>
  */
 class ExampleController extends Base
 {

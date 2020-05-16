@@ -1,6 +1,6 @@
 <?php
 
-namespace Bolt\Extension\YourName\ExtensionName;
+namespace Bolt\Extension\Virprince\DiscordWebHook;
 
 use Bolt\Asset\File\JavaScript;
 use Bolt\Asset\File\Stylesheet;
@@ -8,9 +8,15 @@ use Bolt\Controller\Zone;
 use Bolt\Events\StorageEvent;
 use Bolt\Events\StorageEvents;
 use Bolt\Extension\SimpleExtension;
-use Bolt\Extension\YourName\ExtensionName\Controller\ExampleController;
-use Bolt\Extension\YourName\ExtensionName\Listener\StorageEventListener;
+use Bolt\Extension\Virprince\DiscordWebHook\Classes\DataToDiscord;
+use Bolt\Extension\Virprince\DiscordWebHook\Classes\DiscordMessage;
+use Bolt\Extension\Virprince\DiscordWebHook\Classes\DataUtils;
+use Bolt\Extension\Virprince\DiscordWebHook\Classes\JsonData;
+use Bolt\Extension\Virprince\DiscordWebHook\Classes\WatchedRecord;
+use Bolt\Extension\Virprince\DiscordWebHook\Controller\ExampleController;
+use Bolt\Extension\Virprince\DiscordWebHook\Listener\StorageEventListener;
 use Bolt\Menu\MenuEntry;
+use Bolt\Storage\Entity\Content;
 use Silex\Application;
 use Silex\ControllerCollection;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -19,12 +25,24 @@ use Symfony\Component\HttpFoundation\Response;
 use Twig\Markup;
 
 /**
- * ExtensionName extension class.
+ * DiscordWebHook extension class.
  *
- * @author Your Name <you@example.com>
+ * @author Your Name <virprince@gmail.com>
  */
-class ExtensionNameExtension extends SimpleExtension
+class DiscordWebHookExtension extends SimpleExtension
 {
+    private $isWatched;
+
+    public function __construct()
+    {
+        $this->isWatched = false;
+    }
+
+    private function setIsWatched(bool $value)
+    {
+        $this->isWatched = $value;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -65,11 +83,13 @@ class ExtensionNameExtension extends SimpleExtension
          */
 
         $dispatcher->addListener(StorageEvents::PRE_SAVE, [$this, 'onPreSave']);
+        $dispatcher->addListener(StorageEvents::POST_SAVE, [$this, 'onPostSave']);
 
-        $storageEventListener = new StorageEventListener($this->getContainer(), $this->getConfig());
-        $dispatcher->addListener(StorageEvents::POST_SAVE, [$storageEventListener, 'onPostSave']);
-        $dispatcher->addListener(StorageEvents::PRE_DELETE, [$storageEventListener, 'onPreDelete']);
-        $dispatcher->addListener(StorageEvents::POST_DELETE, [$storageEventListener, 'onPostDelete']);
+        // $storageEventListener = new StorageEventListener($this->getContainer(), $this->getConfig(), $this->isWatched);
+        // $dispatcher->addListener(StorageEvents::POST_SAVE, [$storageEventListener, 'onPostSave']);
+        // $dispatcher->addListener(StorageEvents::PRE_DELETE, [$storageEventListener, 'onPreDelete']);
+        // $dispatcher->addListener(StorageEvents::POST_DELETE, [$storageEventListener, 'onPostDelete']);
+
     }
 
     /**
@@ -89,9 +109,94 @@ class ExtensionNameExtension extends SimpleExtension
         // for more information see the page in the documentation
         $created = $event->isCreate();
 
-        // Do whatever you want with this data
-        // See page in the documentation for a logging example
+        $id = $event->getId();
+
+        // find if data watched in config are the same.
+        $app = $this->getContainer();
+        $config = $this->getConfig();
+
+        // est ce que le contenttype est concerné par une action dans le config ? 
+        $recordActions = WatchedRecord::getRecordActions($record, $config);
+        $watchRecord = false;
+
+            if (count($recordActions) > 0) {
+                // si oui quelle est cette action et est ce qu'elle est concernée par l'event ? 
+                foreach ($recordActions as $action) {
+                    if (array_key_exists( 'action', $action) && $action['action'] === 'new' ) {
+                        // cas d'un nouveau contenu
+                        // Si on récupère la confirmation d'une création de contenu alors on crée l'objet pour le record.
+                        $created ? $watchRecord = true : null;
+                    }
+                    if (array_key_exists( 'action', $action) && is_array($action['action']) ) {
+                        // cas d'une update 
+                        if (array_key_exists( 'type', $action['action']) && $action['action']['type'] === 'update' ) {
+                            // il faut vérifier que les champs à surveiller ont changé
+                            $repo = $app['storage']->getRepository($contenttype);
+                            $isRecordIdentical = WatchedRecord::isWatchedFieldsDifferent($action, $repo->find($id), $record );
+                                if (!$isRecordIdentical) {
+                                    $watchRecord = true;
+                                }
+
+
+                        }
+                    }
+
+                }
+    
+            }
+        // Statut de surveillance du record   
+        $this->setIsWatched($watchRecord);
+        
     }
+
+    /**
+     * [onPostSave description]
+     *
+     * @param   StorageEvent  $event  [$event description]
+     *
+     * @return  [type]                [return description]
+     */
+    public function onPostSave(StorageEvent $event)
+    {
+        $app = $this->getContainer();
+        $config = $this->getConfig();
+        // The record being saved
+        $record = $event->getContent();        
+        if ($this->isWatched) {
+        
+            // Nouvel objet pour le record
+            $watchRecord = new WatchedRecord($app);
+            // On récupère la liste des actions du config et on l'enregistre.
+            $actions = WatchedRecord::getRecordActions($record, $config);
+            $watchRecord->setRecordActions($actions);
+            // Pour chaque action il faudra faire un envoi.
+            foreach ($actions as $key => $action) {
+
+                $message = JsonData::createMessage($record, $action);
+                $jsonData = new JsonData($app);
+                $jsonData->setAction($action);
+                $jsonData->setEmbeds($action);
+                $jsonData->setUsername();
+                $jsonData->setContent($message);
+
+               
+                $json_data = $jsonData->createJsonData();
+                
+                if (array_key_exists('webhook', $action)) {
+                    // on procède à un envoi
+                    $sendToDiscord = new DataToDiscord();
+                    $sendToDiscord->setJsonData($json_data);
+                    $sendToDiscord->setWebHookUrl($action['webhook']);
+                    
+                    DataToDiscord::sendMessage($sendToDiscord->getDataToDiscord());
+                }
+
+            }
+
+        }
+
+    }
+
 
     /**
      * {@inheritdoc}
@@ -171,9 +276,20 @@ class ExtensionNameExtension extends SimpleExtension
      */
     protected function registerServices(Application $app)
     {
-        $app['myextension.config'] = $app->share(function ($app) {
+        $app['discordwebhook.config'] = $app->share(function ($app) {
             return $this->getConfig();
         });
+
+        $app['discordmessage'] = $app->share(
+            function ($app) {
+                return new DiscordMessage($app, $this->getConfig());
+            }
+        );
+        $app['datautils'] = $app->share(
+            function ($app) {
+                return new DataUtils($app, $this->getConfig());
+            }
+        );
     }
 
     /**

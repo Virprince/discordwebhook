@@ -1,7 +1,8 @@
 {
-    "name": "bolt/bolt-extension-starter-extended",
-    "description": "A description about your extension should go here.",
+    "name": "virprince/discordwebhook",
+    "description": "Link your bolt content with discord webhook",
     "type": "bolt-extension",
+    "version": "v0.0.1",
     "keywords": [
         "foo",
         "bar"
@@ -15,26 +16,26 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Your Name",
-            "email": "you@example.com"
+            "name": "Virprince",
+            "email": "virprince@gmail.com"
         }
     ],
     "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "Bolt\\Extension\\YourName\\ExtensionName\\": "src"
+            "Bolt\\Extension\\Virprince\\DiscordWebHook\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Bolt\\Extension\\YourName\\ExtensionName\\Tests\\": "tests",
+            "Bolt\\Extension\\Virprince\\DiscordWebHook\\Tests\\": "tests",
             "Bolt\\Tests\\": "vendor/bolt/bolt/tests/phpunit/unit/"
         }
     },
     "extra": {
         "bolt-assets": "web",
-        "bolt-class": "Bolt\\Extension\\YourName\\ExtensionName\\ExtensionNameExtension",
+        "bolt-class": "Bolt\\Extension\\Virprince\\DiscordWebHook\\DiscordWebHookExtension",
         "bolt-icon": "bolt-icon.png",
         "bolt-screenshots": [
             "screenshots/screenshot1.png"
