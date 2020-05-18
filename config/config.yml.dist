@@ -3,7 +3,7 @@ new_characters:
     contenttype: characters
     options:
         message: "Une nouvelle candidature vient d'être postée ! Evaluer la feuille de personnage [link]"
-    webhook: https://discordapp.com/api/webhooks/710095383530962945/eMNC8HLCvl5WVTCC_zv9SCHq5JB24Nuf7HBPFZ77XEteckXmlAQkZKu0tdkVVicavr3R
+    webhook: https://discordapp.com/api/webhooks/.....
 
 change_modules:
     action:
@@ -16,7 +16,7 @@ change_modules:
             datechanged: simple
             modules_block: ['id', 'name']
         message: @here Dernière mise à jour des modules le [datechanged] ```[modules_block] ```
-    webhook: https://discordapp.com/api/webhooks/710095383530962945/eMNC8HLCvl5WVTCC_zv9SCHq5JB24Nuf7HBPFZ77XEteckXmlAQkZKu0tdkVVicavr3R
+    webhook: https://discordapp.com/api/webhooks/....
     username: Liste des modules
     # avatar_url:
     # embeds:
@@ -24,7 +24,7 @@ change_modules:
     #     color: 3366ff
     #     type: rich
     #     description: foooo
-    #     url: http://conanexiles.vassharans.com/
+    #     url: http://
     #     image:
     #     footer:
     #         text:
@@ -35,7 +35,7 @@ change_modules:
     #         url:
     #     author:
     #         name:
-    #         url: http://conanexiles.vassharans.com/
+    #         url: http://
     #     fields:
     #         foo :
     #             name:
